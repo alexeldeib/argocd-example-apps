@@ -21,10 +21,10 @@ ingress:
   path: /
   hosts:
     - guestbook.alexeldeib.xyz
-  tls: []
-    - secretName: guestbook-tls
-      hosts:
-        - guestbook.alexeldeib.xyz
+  tls:
+  - secretName: guestbook-tls
+    hosts:
+    - guestbook.alexeldeib.xyz
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
