@@ -20,7 +20,7 @@ ingress:
     kubernetes.io/tls-acme: "true"
   path: /
   hosts:
-    - guestbook.alexeldeib.xyz
+  - guestbook.alexeldeib.xyz
   tls: []
   - secretName: guestbook-tls
     hosts:
