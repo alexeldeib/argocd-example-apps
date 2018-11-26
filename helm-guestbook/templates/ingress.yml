@@ -1,0 +1,40 @@
+{{- if .Values.ingress.enabled -}}
+{{- $serviceName := include "helm-guestbook.fullname" . }}
+{{- $servicePort := .Values.service.port }}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+  {{- range $key, $value := .Values.ingress.annotations }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+  name: {{ template "helm-guestbook.fullname" . }}
+  labels:
+    app: {{ template "helm-guestbook.name" . }}
+    chart: {{ template "helm-guestbook.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  rules:
+  {{- range .Values.ingress.hosts }}
+    - host: {{ . }}
+      http:
+        paths:
+        {{- if index $.Values.ingress "annotations" }}
+          {{- if eq (index $.Values.ingress.annotations "kubernetes.io/ingress.class" | default "") "gce" "alb" }}
+          - path: /*
+          {{- else }}{{/* Has annotations but ingress class is not "gce" nor "alb" */}}
+          - path: /
+          {{- end }}
+        {{- else}}{{/* Has no annotations */}}
+          - path: /
+        {{- end }}
+            backend:
+              serviceName: {{ $serviceName }}
+              servicePort: {{ $servicePort }}
+  {{- end -}}
+  {{- if .Values.ingress.tls }}
+  tls:
+{{ toYaml .Values.ingress.tls | indent 4 }}
+  {{- end -}}
+{{- end -}}
